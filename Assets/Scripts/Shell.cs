@@ -5,21 +5,22 @@ using UnityEngine;
 
 public class Shell : MonoBehaviour
 {
+    [SerializeField] private MeshRenderer shellMesh;
     public int Id => id;
-    [SerializeField] private int id;
+    private int id;
+
+    private Color[] colors = new Color[3] { Color.red, Color.green, Color.blue };
+    private Vector3[] positions = new Vector3[3] { new Vector3(-3, 0, 0), new Vector3(0, 0, -3), new Vector3(3, 0, 0) };
 
     private Queue<PathPointToPoint> pathQueue = new Queue<PathPointToPoint>();
 
     private Vector3 currentPos;
     private Vector3 targetPos;
     private Vector3 extraPos;
-    private int moveCount = 0;
+
     private bool isMove = false;
     private float timer = 0f;
-    private void Start()
-    {
-        
-    }
+
     private void Update()
     {
         if (isMove)
@@ -40,6 +41,12 @@ public class Shell : MonoBehaviour
             transform.position = Vector3.Lerp(a, b, timer);
         }
     }
+    public void Init(int id)
+    {
+        this.id = id;
+        shellMesh.material.color = colors[id];
+        transform.position = positions[id];
+    }
     public void Reload(IEnumerable<PathPointToPoint> pathes)
     {
         foreach (PathPointToPoint path in pathes)
@@ -57,7 +64,6 @@ public class Shell : MonoBehaviour
             targetPos = path.to;
             extraPos = path.extra;
 
-            moveCount++;
             isMove = true;
         }
     }

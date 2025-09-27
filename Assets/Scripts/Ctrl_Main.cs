@@ -13,6 +13,11 @@ public class Ctrl_Main : MonoBehaviour
 
     private void Start()
     {
+        for (int i = 0; i < shells.Length; i++)
+        {
+            shells[i].Init(i);
+        }
+
         pointDictionary = shells.ToDictionary(key => key.Id, value => value.transform.position);
         pathDictionary = CreatePathes(pointDictionary);
     }
