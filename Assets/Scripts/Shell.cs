@@ -68,18 +68,8 @@ public class Shell : MonoBehaviour
         }
     }
 
-    public void Open()
+    public void Select()
     {
-
-    }
-
-    public void Close()
-    {
-
-    }
-
-    private void Stop()
-    {
-        
+        Debug.Log($"{name} Select!");
     }
 }

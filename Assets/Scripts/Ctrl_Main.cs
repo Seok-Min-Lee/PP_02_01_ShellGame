@@ -34,6 +34,11 @@ public class Ctrl_Main : MonoBehaviour
         {
             ShufflePathes(10);
         }
+
+        if (Input.GetMouseButtonDown(0)) // 마우스 왼쪽 버튼
+        {
+            Choose();
+        }
     }
     public void StartGame()
     {
@@ -42,7 +47,13 @@ public class Ctrl_Main : MonoBehaviour
 
     public void Choose()
     {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
+        if (Physics.Raycast(ray, out RaycastHit hit) &&
+            hit.transform.TryGetComponent<Shell>(out Shell shell))
+        {
+            shell.Select();
+        }
     }
 
     public void EndGame()
