@@ -132,6 +132,7 @@ GameObject:
   m_Component:
   - component: {fileID: 244944148}
   - component: {fileID: 244944147}
+  - component: {fileID: 244944149}
   m_Layer: 0
   m_Name: Ctrl
   m_TagString: Untagged
@@ -151,10 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcd0352bb2b733f4d8eaa6952fa7994c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shells:
-  - {fileID: 1802531239}
-  - {fileID: 1381589115}
-  - {fileID: 1266240893}
+  shellMixer: {fileID: 244944149}
 --- !u!4 &244944148
 Transform:
   m_ObjectHideFlags: 0
@@ -170,6 +168,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &244944149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 244944146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ccf203c057bfbe49ab50cdd5ee89a22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shells:
+  - {fileID: 1802531239}
+  - {fileID: 1381589115}
+  - {fileID: 1266240893}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
