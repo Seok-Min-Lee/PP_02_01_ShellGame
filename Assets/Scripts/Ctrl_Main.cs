@@ -72,7 +72,7 @@ public class Ctrl_Main : MonoBehaviour
         {
             pathesDictionary.Add(i, new List<PathPointToPoint>());
             columns.Add(shells[i].Id);
-            matrix[i, 0] = shells[i].Id;
+            matrix[i, 0] = shells[i].lastPath.HasValue ? shells[i].lastPath.Value.toId : i;
         }
 
         // 매 턴마다의 위치 확보

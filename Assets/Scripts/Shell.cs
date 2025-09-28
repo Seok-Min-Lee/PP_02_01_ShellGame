@@ -9,14 +9,23 @@ public class Shell : MonoBehaviour
     public int Id => id;
     private int id;
 
-    private Color[] colors = new Color[3] { Color.red, Color.green, Color.blue };
-    private Vector3[] positions = new Vector3[3] { new Vector3(-3, 0, 0), new Vector3(0, 0, -3), new Vector3(3, 0, 0) };
+    private Color[] colors = new Color[3] 
+    { 
+        Color.red, 
+        Color.green, 
+        Color.blue 
+    };
+    private Vector3[] positions = new Vector3[3] 
+    { 
+        new Vector3(-3, 0, 0),
+        new Vector3(0, 0, -3), 
+        new Vector3(3, 0, 0) 
+    };
 
     private Queue<PathPointToPoint> pathQueue = new Queue<PathPointToPoint>();
 
-    private Vector3 currentPos;
-    private Vector3 targetPos;
-    private Vector3 extraPos;
+    public PathPointToPoint? lastPath { get; private set; } = null;
+    private Vector3 startPos, targetPos, extraPos;
 
     private bool isMove = false;
     private float timer = 0f;
@@ -29,13 +38,24 @@ public class Shell : MonoBehaviour
             {
                 timer = 0f;
 
-                isMove = false;
-                return;
+                if (pathQueue.Count > 0)
+                {
+                    lastPath = pathQueue.Dequeue();
+
+                    startPos = lastPath.Value.from;
+                    targetPos = lastPath.Value.to;
+                    extraPos = lastPath.Value.extra;
+                }
+                else
+                {
+                    isMove = false;
+                    return;
+                }
             }
 
             timer += Time.deltaTime;
             // bezier curve
-            Vector3 a = Vector3.Lerp(currentPos, extraPos, timer);
+            Vector3 a = Vector3.Lerp(startPos, extraPos, timer);
             Vector3 b = Vector3.Lerp(extraPos, targetPos, timer);
 
             transform.position = Vector3.Lerp(a, b, timer);
@@ -58,11 +78,11 @@ public class Shell : MonoBehaviour
     {
         if (pathQueue.Count > 0)
         {
-            PathPointToPoint path = pathQueue.Dequeue();
+            lastPath = pathQueue.Dequeue();
 
-            currentPos = path.from;
-            targetPos = path.to;
-            extraPos = path.extra;
+            startPos = lastPath.Value.from;
+            targetPos = lastPath.Value.to;
+            extraPos = lastPath.Value.extra;
 
             isMove = true;
         }
