@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,9 +6,13 @@ using UnityEngine;
 
 public class Shell : MonoBehaviour
 {
+    public enum State
+    {
+        None,
+        Shuffle,
+        Show
+    }
     [SerializeField] private MeshRenderer shellMesh;
-    public int Id => id;
-    private int id;
 
     private Color[] colors = new Color[3] 
     { 
@@ -24,15 +29,18 @@ public class Shell : MonoBehaviour
 
     private Queue<PathPointToPoint> pathQueue = new Queue<PathPointToPoint>();
 
+    public int id { get; private set; }
+    public bool isRight { get; private set; }
+    public State state { get; private set; }
+    public ShellMixer mixer { get; private set; }
     public PathPointToPoint? lastPath { get; private set; } = null;
-    private Vector3 startPos, targetPos, extraPos;
 
-    private bool isMove = false;
+    private Vector3 startPos, targetPos, extraPos;
     private float timer = 0f;
 
     private void Update()
     {
-        if (isMove)
+        if (state == State.Shuffle)
         {
             if (timer > 1f)
             {
@@ -48,7 +56,8 @@ public class Shell : MonoBehaviour
                 }
                 else
                 {
-                    isMove = false;
+                    state = State.None;
+                    mixer.ShuffleEnd();
                     return;
                 }
             }
@@ -61,9 +70,12 @@ public class Shell : MonoBehaviour
             transform.position = Vector3.Lerp(a, b, timer);
         }
     }
-    public void Init(int id)
+    public void Init(int id, bool isRight, ShellMixer mixer)
     {
         this.id = id;
+        this.isRight = isRight;
+        this.mixer = mixer;
+
         shellMesh.material.color = colors[id];
         transform.position = positions[id];
     }
@@ -84,12 +96,48 @@ public class Shell : MonoBehaviour
             targetPos = lastPath.Value.to;
             extraPos = lastPath.Value.extra;
 
-            isMove = true;
+            state = State.Shuffle;
         }
     }
 
-    public void Select()
+    public void Show(Action<bool> callback = null)
     {
-        Debug.Log($"{name} Select!");
+        StartCoroutine(Cor());
+
+        IEnumerator Cor()
+        {
+            state = State.Show;
+
+            float t = 0f;
+            Vector3 startPos = transform.position;
+            Vector3 targetPos = transform.position + Vector3.up;
+
+            while (t < 1f)
+            {
+                t += Time.deltaTime;
+
+                transform.position = Vector3.Lerp(startPos, targetPos, t);
+
+                yield return null;
+            }
+            transform.position = targetPos;
+
+            yield return new WaitForSeconds(1f);
+
+            t = 0f;
+            while (t < 1f)
+            {
+                t += Time.deltaTime;
+
+                transform.position = Vector3.Lerp(targetPos, startPos, t);
+
+                yield return null;
+            }
+            transform.position = startPos;
+
+            state = State.None;
+
+            callback?.Invoke(isRight);
+        }
     }
 }

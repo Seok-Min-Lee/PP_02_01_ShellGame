@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shellMixer: {fileID: 244944149}
+  roundMax: 3
 --- !u!4 &244944148
 Transform:
   m_ObjectHideFlags: 0
@@ -180,6 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ccf203c057bfbe49ab50cdd5ee89a22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ctrl: {fileID: 244944147}
   shells:
   - {fileID: 1802531239}
   - {fileID: 1381589115}
