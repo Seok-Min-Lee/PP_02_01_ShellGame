@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -103,42 +104,10 @@ public class Shell : MonoBehaviour
 
     public void Show(Action<bool> callback = null)
     {
-        StartCoroutine(Cor());
+        Sequence seq = DOTween.Sequence();
 
-        IEnumerator Cor()
-        {
-            state = State.Show;
-
-            float t = 0f;
-            Vector3 startPos = transform.position;
-            Vector3 targetPos = transform.position + Vector3.up;
-
-            while (t < 1f)
-            {
-                t += Time.deltaTime * speed;
-
-                transform.position = Vector3.Lerp(startPos, targetPos, t);
-
-                yield return null;
-            }
-            transform.position = targetPos;
-
-            yield return new WaitForSeconds(1f);
-
-            t = 0f;
-            while (t < 1f)
-            {
-                t += Time.deltaTime * speed;
-
-                transform.position = Vector3.Lerp(targetPos, startPos, t);
-
-                yield return null;
-            }
-            transform.position = startPos;
-
-            state = State.None;
-
-            callback?.Invoke(isRight);
-        }
+        seq.Append(transform.DOMoveY(1, 1f / speed));
+        seq.Append(transform.DOMoveY(0, 1f / speed));
+        seq.AppendCallback(() => callback?.Invoke(isRight));
     }
 }
