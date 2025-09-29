@@ -186,6 +186,7 @@ MonoBehaviour:
   - {fileID: 1802531239}
   - {fileID: 1381589115}
   - {fileID: 1266240893}
+  shuffleCount: 10
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

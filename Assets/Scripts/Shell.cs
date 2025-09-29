@@ -13,6 +13,7 @@ public class Shell : MonoBehaviour
         Show
     }
     [SerializeField] private MeshRenderer shellMesh;
+    [SerializeField] [Range(1, 10)] private float speed;
 
     private Color[] colors = new Color[3] 
     { 
@@ -62,7 +63,7 @@ public class Shell : MonoBehaviour
                 }
             }
 
-            timer += Time.deltaTime;
+            timer += Time.deltaTime * speed;
             // bezier curve
             Vector3 a = Vector3.Lerp(startPos, extraPos, timer);
             Vector3 b = Vector3.Lerp(extraPos, targetPos, timer);
@@ -114,7 +115,7 @@ public class Shell : MonoBehaviour
 
             while (t < 1f)
             {
-                t += Time.deltaTime;
+                t += Time.deltaTime * speed;
 
                 transform.position = Vector3.Lerp(startPos, targetPos, t);
 
@@ -127,7 +128,7 @@ public class Shell : MonoBehaviour
             t = 0f;
             while (t < 1f)
             {
-                t += Time.deltaTime;
+                t += Time.deltaTime * speed;
 
                 transform.position = Vector3.Lerp(targetPos, startPos, t);
 

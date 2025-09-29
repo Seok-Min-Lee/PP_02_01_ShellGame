@@ -163,6 +163,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shellMesh: {fileID: 4482233920594312924}
+  speed: 10
 --- !u!65 &5612726346961293350
 BoxCollider:
   m_ObjectHideFlags: 0
