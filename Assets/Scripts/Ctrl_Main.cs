@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Ctrl_Main : MonoBehaviour
 {
@@ -12,15 +14,26 @@ public class Ctrl_Main : MonoBehaviour
         Play,
         Checkpoint
     }
+
+    [SerializeField] private GameObject readyPopup;
+    [SerializeField] private GameObject goPopup;
+    [SerializeField] private GameObject nextPopup;
+    [SerializeField] private GameObject tutorialPopup;
+    [SerializeField] private GameObject finishPopup;
+
+    [SerializeField] private Image[] roundFeedbacks;
+    [SerializeField] private TextMeshProUGUI timerText;
+
     [SerializeField] private ShellMixer shellMixer;
     [SerializeField] private int roundMax;
 
     private State state;
     private int roundCount = 1;
     private int rightCount = 0;
+    private Coroutine coroutine = null;
     private void Start()
     {
-        state = State.Wait;
+        Init();
     }
     private void Update()
     {
@@ -34,42 +47,106 @@ public class Ctrl_Main : MonoBehaviour
             Choose();
         }
     }
-    public void GameStart()
+    public void OnClickStart()
+    {
+        coroutine = StartCoroutine(Cor());
+
+        IEnumerator Cor()
+        {
+            tutorialPopup.SetActive(false);
+            readyPopup.SetActive(true);
+
+            yield return new WaitForSeconds(1f);
+
+            readyPopup.SetActive(false);
+            goPopup.SetActive(true);
+
+            yield return new WaitForSeconds(1f);
+
+            goPopup.SetActive(false);
+            GameStart();
+        }
+    }
+    public void OnClickRetry()
+    {
+        StaticValues.isRetry = true;
+        UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
+    }
+    public void OnClickStop()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
+    }
+    private void GameStart()
     {
         shellMixer.Preview();
-
         state = State.Play;
-
-        Debug.Log("GameStart");
     }
     public void Checkpoint()
     {
-        state = State.Checkpoint;
-        Debug.Log("Checkpoint");
-    }
+        coroutine = StartCoroutine(Cor());
 
-    public void Choose()
+        IEnumerator Cor()
+        {
+            state = State.Checkpoint;
+
+            // Start Timer
+            timerText.gameObject.SetActive(true);
+
+            for (int i = 10; i > 0; i--)
+            {
+                timerText.text = i.ToString();
+                yield return new WaitForSeconds(1f);
+            }
+
+            timerText.text = "0";
+
+            yield return new WaitForSeconds(1f);
+
+            // When don't choose
+            timerText.gameObject.SetActive(false);
+            ChooseCallback(false);
+        }
+    }
+    private void Choose()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out RaycastHit hit) &&
             hit.transform.TryGetComponent<Shell>(out Shell shell))
         {
+            // Stop Checkpoint Corout
+            StopCoroutine(coroutine);
+            timerText.gameObject.SetActive(false);
+
+            // Choice Shell
             shell.Show(ChooseCallback);
         }
     }
-    public void ChooseCallback(bool result)
+    private void ChooseCallback(bool result)
     {
         if (result)
         {
             rightCount++;
-            RoundSuccess();
+            roundFeedbacks[roundCount - 1].color = Color.green;
+
+            GameCheck(false);
         }
         else
         {
-            RoundFail();
+            // Show Correct Shell
+            foreach (Shell s in shellMixer.Shells)
+            {
+                if (s.isRight)
+                {
+                    s.Show(GameCheck);
+                }
+            }
+
+            roundFeedbacks[roundCount - 1].color = Color.red;
         }
-        
+    }
+    private void GameCheck(bool value)
+    {
         int half = roundMax / 2 + 1;
 
         if (roundMax - roundCount + rightCount >= half)
@@ -88,38 +165,66 @@ public class Ctrl_Main : MonoBehaviour
             GameDefeat();
         }
     }
-    public void RoundSuccess()
+    private void RoundNext()
     {
-        Debug.Log("RoundSuccess");
-    }
-    public void RoundFail()
-    {
-        Debug.Log("RoundFail");
+        coroutine = StartCoroutine(Cor());
 
-    }
-    public void RoundNext()
-    {
-        roundCount++;
-        state = State.Play;
+        IEnumerator Cor()
+        {
+            roundCount++;
+            state = State.Play;
 
-        Debug.Log("RoundNext");
+            nextPopup.SetActive(true);
 
-        shellMixer.Preview();
+            yield return new WaitForSeconds(1f);
+
+            nextPopup.SetActive(false);
+
+            shellMixer.Preview();
+        }
     }
-    public void GameVictory()
+    private void GameVictory()
     {
         state = State.Wait;
         roundCount = 1;
         rightCount = 0;
 
-        Debug.Log("GameVictory");
+        finishPopup.SetActive(true);
     }
-    public void GameDefeat()
+    private void GameDefeat()
     {
         state = State.Wait;
         roundCount = 1;
         rightCount = 0;
 
-        Debug.Log("GameDefeat");
+        finishPopup.SetActive(true);
+    }
+    private void Init()
+    {
+        // Init Fields
+        state = State.Wait;
+        roundCount = 1;
+        rightCount = 0;
+
+        // Init UI
+        readyPopup.SetActive(false);
+        goPopup.SetActive(false);
+        nextPopup.SetActive(false);
+        tutorialPopup.SetActive(true);
+        finishPopup.SetActive(false);
+        timerText.gameObject.SetActive(false);
+
+        for (int i = 0; i < roundFeedbacks.Length; i++)
+        {
+            roundFeedbacks[i].color = new Color(0, 0, 0, 0);
+        }
+
+        // Retry
+        if (StaticValues.isRetry)
+        {
+            OnClickStart();
+
+            StaticValues.isRetry = false;
+        }
     }
 }

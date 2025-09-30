@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class ShellMixer : MonoBehaviour
 {
+    public Shell[] Shells => shells;
+
     [SerializeField] private Ctrl_Main ctrl;
     [SerializeField] private Shell[] shells;
 
