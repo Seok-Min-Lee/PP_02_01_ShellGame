@@ -108,12 +108,12 @@ public class Shell : MonoBehaviour
     {
         Sequence seq = DOTween.Sequence();
 
-        seq.Append(shellTransform.DOMoveY(1.7f, 1f / speed));
-        seq.Join(shellTransform.DOMoveZ(1.7f, 1f / speed));
+        seq.Append(shellTransform.DOLocalMoveY(1.7f, 1f / speed));
+        seq.Join(shellTransform.DOLocalMoveZ(1.7f, 1f / speed));
         seq.Join(shellTransform.DOLocalRotate(new Vector3(225, 0, 0), 1f / speed));
 
-        seq.Append(shellTransform.DOMoveY(0f, 1f / speed));
-        seq.Join(shellTransform.DOMoveZ(0f, 1f / speed));
+        seq.Append(shellTransform.DOLocalMoveY(0f, 1f / speed));
+        seq.Join(shellTransform.DOLocalMoveZ(0f, 1f / speed));
         seq.Join(shellTransform.DOLocalRotate(new Vector3(180, 0, 0), 1f / speed));
 
         seq.AppendCallback(() => callback?.Invoke(isRight));
