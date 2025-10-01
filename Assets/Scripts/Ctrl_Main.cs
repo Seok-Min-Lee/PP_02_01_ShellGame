@@ -12,7 +12,8 @@ public class Ctrl_Main : MonoBehaviour
     {
         Wait,
         Play,
-        Checkpoint
+        Checkpoint,
+        End
     }
 
     [SerializeField] private GameObject readyPopup;
@@ -22,7 +23,8 @@ public class Ctrl_Main : MonoBehaviour
     [SerializeField] private GameObject finishPopup;
 
     [SerializeField] private Image[] roundFeedbacks;
-    [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private TextMeshProUGUI choiceTimerText;
+    [SerializeField] private TextMeshProUGUI finishTimerText;
 
     [SerializeField] private ShellMixer shellMixer;
     [SerializeField] private int roundMax;
@@ -90,20 +92,20 @@ public class Ctrl_Main : MonoBehaviour
             state = State.Checkpoint;
 
             // Start Timer
-            timerText.gameObject.SetActive(true);
+            choiceTimerText.gameObject.SetActive(true);
 
             for (int i = 10; i > 0; i--)
             {
-                timerText.text = i.ToString();
+                choiceTimerText.text = i.ToString();
                 yield return new WaitForSeconds(1f);
             }
 
-            timerText.text = "0";
+            choiceTimerText.text = "0";
 
             yield return new WaitForSeconds(1f);
 
             // When don't choose
-            timerText.gameObject.SetActive(false);
+            choiceTimerText.gameObject.SetActive(false);
             ChooseCallback(false);
         }
     }
@@ -116,7 +118,7 @@ public class Ctrl_Main : MonoBehaviour
         {
             // Stop Checkpoint Corout
             StopCoroutine(coroutine);
-            timerText.gameObject.SetActive(false);
+            choiceTimerText.gameObject.SetActive(false);
 
             // Choice Shell
             shell.Show(ChooseCallback);
@@ -185,7 +187,7 @@ public class Ctrl_Main : MonoBehaviour
     }
     private void GameVictory()
     {
-        state = State.Wait;
+        state = State.End;
         roundCount = 1;
         rightCount = 0;
 
@@ -193,11 +195,25 @@ public class Ctrl_Main : MonoBehaviour
     }
     private void GameDefeat()
     {
-        state = State.Wait;
-        roundCount = 1;
-        rightCount = 0;
+        coroutine = StartCoroutine(Cor());
 
-        finishPopup.SetActive(true);
+        IEnumerator Cor()
+        {
+            state = State.End;
+            roundCount = 1;
+            rightCount = 0;
+
+            finishPopup.SetActive(true);
+
+            for (int i = 10; i > 0; i--)
+            {
+                finishTimerText.text = i.ToString();
+                yield return new WaitForSeconds(1f);
+            }
+
+            finishTimerText.text = "0";
+            OnClickStop();
+        }
     }
     private void Init()
     {
@@ -212,7 +228,7 @@ public class Ctrl_Main : MonoBehaviour
         nextPopup.SetActive(false);
         tutorialPopup.SetActive(true);
         finishPopup.SetActive(false);
-        timerText.gameObject.SetActive(false);
+        choiceTimerText.gameObject.SetActive(false);
 
         for (int i = 0; i < roundFeedbacks.Length; i++)
         {
