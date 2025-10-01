@@ -13,7 +13,8 @@ public class Shell : MonoBehaviour
         Shuffle,
         Show
     }
-    [SerializeField] private MeshRenderer shellMesh;
+    [SerializeField] private Transform shellTransform;
+    [SerializeField] private GameObject ball;
     [SerializeField] [Range(1, 10)] private float speed;
 
     private Color[] colors = new Color[3] 
@@ -78,7 +79,8 @@ public class Shell : MonoBehaviour
         this.isRight = isRight;
         this.mixer = mixer;
 
-        shellMesh.material.color = colors[id];
+        shellTransform.GetComponent<MeshRenderer>().material.color = colors[id];
+        ball.SetActive(isRight);
         transform.position = positions[id];
     }
     public void Reload(IEnumerable<PathPointToPoint> pathes)
@@ -106,8 +108,14 @@ public class Shell : MonoBehaviour
     {
         Sequence seq = DOTween.Sequence();
 
-        seq.Append(transform.DOMoveY(1, 1f / speed));
-        seq.Append(transform.DOMoveY(0, 1f / speed));
+        seq.Append(shellTransform.DOMoveY(1.7f, 1f / speed));
+        seq.Join(shellTransform.DOMoveZ(1.7f, 1f / speed));
+        seq.Join(shellTransform.DOLocalRotate(new Vector3(225, 0, 0), 1f / speed));
+
+        seq.Append(shellTransform.DOMoveY(0f, 1f / speed));
+        seq.Join(shellTransform.DOMoveZ(0f, 1f / speed));
+        seq.Join(shellTransform.DOLocalRotate(new Vector3(180, 0, 0), 1f / speed));
+
         seq.AppendCallback(() => callback?.Invoke(isRight));
     }
 }
