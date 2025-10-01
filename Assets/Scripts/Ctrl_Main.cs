@@ -70,11 +70,11 @@ public class Ctrl_Main : MonoBehaviour
     public void OnClickRetry()
     {
         StaticValues.isRetry = true;
-        UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
+        UnityEngine.SceneManagement.SceneManager.LoadScene(ConstantValues.SCENE_MAIN);
     }
     public void OnClickStop()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
+        UnityEngine.SceneManagement.SceneManager.LoadScene(ConstantValues.SCENE_TITLE);
     }
     private void GameStart()
     {
@@ -189,7 +189,7 @@ public class Ctrl_Main : MonoBehaviour
         roundCount = 1;
         rightCount = 0;
 
-        finishPopup.SetActive(true);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(ConstantValues.SCENE_REWARD);
     }
     private void GameDefeat()
     {
