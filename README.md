@@ -1,2 +1,2 @@
 Add Readme Test
-![Mp4 Upload Test](Preview.mp4)
+![Mp4 Upload Test](Preview.gif)
