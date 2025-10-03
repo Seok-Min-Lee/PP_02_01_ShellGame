@@ -15,19 +15,23 @@ public class Shell : MonoBehaviour
     }
     [SerializeField] private Transform shellTransform;
     [SerializeField] private GameObject ball;
-    [SerializeField] [Range(1, 10)] private float speed;
+    [SerializeField] [Range(1, 10)] private int speed;
 
-    private Color[] colors = new Color[3] 
+    private Color[] colors = new Color[5] 
     { 
         Color.red, 
         Color.green, 
-        Color.blue 
+        Color.blue,
+        Color.yellow,
+        Color.cyan
     };
-    private Vector3[] positions = new Vector3[3] 
+    private Vector3[] positions = new Vector3[5] 
     { 
         new Vector3(-3, 0, 0),
         new Vector3(0, 0, -3), 
-        new Vector3(3, 0, 0) 
+        new Vector3(3, 0, 0),
+        new Vector3(-3, 0, -6),
+        new Vector3(3, 0, -6),
     };
 
     private Queue<PathPointToPoint> pathQueue = new Queue<PathPointToPoint>();
@@ -73,15 +77,20 @@ public class Shell : MonoBehaviour
             transform.position = Vector3.Lerp(a, b, timer);
         }
     }
-    public void Init(int id, bool isRight, ShellMixer mixer)
+    public void Init(int id, int speed, bool isRight, ShellMixer mixer)
     {
         this.id = id;
+        this.speed = speed;
         this.isRight = isRight;
         this.mixer = mixer;
 
         shellTransform.GetComponent<MeshRenderer>().material.color = colors[id];
         ball.SetActive(isRight);
         transform.position = positions[id];
+    }
+    public void SettingLevel(int speed)
+    {
+        this.speed = speed;
     }
     public void Reload(IEnumerable<PathPointToPoint> pathes)
     {

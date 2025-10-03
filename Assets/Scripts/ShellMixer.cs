@@ -16,24 +16,37 @@ public class ShellMixer : MonoBehaviour
     private Dictionary<int, Vector3> pointDictionary = new Dictionary<int, Vector3>();
     private Dictionary<(int, int), List<PathPointToPoint>> pathDictionary = new Dictionary<(int, int), List<PathPointToPoint>>();
 
-    private void Start()
+    private int shellCount;
+    public void Init(int count, int speed)
     {
-        int rightIndex = UnityEngine.Random.Range(0, shells.Length);
+        shellCount = count;
+
+        pointDictionary = new Dictionary<int, Vector3>();
+        int rightIndex = UnityEngine.Random.Range(0, count);
         for (int i = 0; i < shells.Length; i++)
         {
-            shells[i].Init(
-                id: i, 
-                isRight: i == rightIndex, 
-                mixer: this
-            );
+            if (i < count)
+            {
+                shells[i].Init(
+                    id: i,
+                    speed: speed,
+                    isRight: i == rightIndex,
+                    mixer: this
+                );
+
+                pointDictionary.Add(i, shells[i].transform.position);
+            }
+            else
+            {
+                shells[i].gameObject.SetActive(false);
+            }
         }
 
-        pointDictionary = shells.ToDictionary(key => key.id, value => value.transform.position);
         pathDictionary = CreatePathes(pointDictionary);
     }
     public void Preview()
     {
-        for (int i = 0; i < shells.Length; i++)
+        for (int i = 0; i < shellCount; i++)
         {
             if (shells[i].isRight)
             {
@@ -49,10 +62,10 @@ public class ShellMixer : MonoBehaviour
     {
         Dictionary<int, List<PathPointToPoint>> pathesDictionary = new Dictionary<int, List<PathPointToPoint>>();
         List<int> columns = new List<int>();
-        int[,] matrix = new int[shells.Length, shuffleCount + 1];
+        int[,] matrix = new int[shellCount, shuffleCount + 1];
 
         // Init
-        for (int i = 0; i < shells.Length; i++)
+        for (int i = 0; i < shellCount; i++)
         {
             pathesDictionary.Add(i, new List<PathPointToPoint>());
             columns.Add(shells[i].id);
@@ -98,9 +111,9 @@ public class ShellMixer : MonoBehaviour
                 usedGroupId.Add(path.groupId);
             }
         }
-
+        
         // Àû¿ë
-        for (int i = 0; i < shells.Length; i++)
+        for (int i = 0; i < shellCount; i++)
         {
             shells[i].Reload(pathesDictionary[i]);
         }
@@ -114,7 +127,7 @@ public class ShellMixer : MonoBehaviour
     }
     public void ShuffleEnd()
     {
-        for (int i = 0; i < shells.Length; i++)
+        for (int i = 0; i < shellCount; i++)
         {
             if (shells[i].state == Shell.State.Shuffle)
             {
@@ -124,23 +137,12 @@ public class ShellMixer : MonoBehaviour
 
         ctrl.Checkpoint();
     }
-
-    //public void Choose(Action<bool> callback)
-    //{
-    //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-    //    if (Physics.Raycast(ray, out RaycastHit hit) &&
-    //        hit.transform.TryGetComponent<Shell>(out Shell shell))
-    //    {
-    //        shell.Show(callback);
-    //    }
-    //}
     private Dictionary<(int, int), List<PathPointToPoint>> CreatePathes(Dictionary<int, Vector3> pointDictionary)
     {
         Dictionary<(int, int), List<PathPointToPoint>> dictionary = new Dictionary<(int, int), List<PathPointToPoint>>();
 
         int groupId = 0;
-        for (int i = 0; i < shells.Length; i++)
+        for (int i = 0; i < shellCount; i++)
         {
             int fromId = shells[i].id;
             Vector3 from = pointDictionary[fromId];
@@ -150,7 +152,7 @@ public class ShellMixer : MonoBehaviour
 
             dictionary.Add((i, i), stops);
 
-            for (int j = i + 1; j < shells.Length; j++)
+            for (int j = i + 1; j < shellCount; j++)
             {
                 int groupId1 = groupId++;
                 int groupId2 = groupId++;

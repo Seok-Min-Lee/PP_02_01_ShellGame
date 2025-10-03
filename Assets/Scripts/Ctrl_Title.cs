@@ -18,6 +18,10 @@ public class Ctrl_Title : MonoBehaviour
             });
         }
 
+        StaticValues.isRetry = false;
+        StaticValues.shellNumber = 0;
+        StaticValues.shellSpeed = 0;
+
         signCG.DOFade(0f, 1f).SetLoops(-1, LoopType.Yoyo);
     }
     public void OnClickStart()

@@ -17,7 +17,7 @@ public class Ctrl_Main : MonoBehaviour
     }
 
     [Header("UI")]
-    [SerializeField] private GameObject tutorialPopup;
+    [SerializeField] private SettingWindow settingWindow;
     [SerializeField] private GameObject finishPopup;
     [SerializeField] private Prompter prompter;
 
@@ -53,25 +53,22 @@ public class Ctrl_Main : MonoBehaviour
     }
     private void Update()
     {
-        if (state == State.Wait && Input.GetKeyDown(KeyCode.Tab))
-        {
-            GameStart();
-        }
-
         if (state == State.Checkpoint && Input.GetMouseButtonDown(0)) // 마우스 왼쪽 버튼
         {
             AudioManager.Instance.PlaySFX(Sound.Key.Click);
             Choose();
         }
     }
-    public void OnClickStart()
+    public void PlayGame(int shellNumber, int shellSpeed)
     {
         coroutine = StartCoroutine(Cor());
 
         IEnumerator Cor()
         {
-            AudioManager.Instance.PlaySFX(Sound.Key.Click);
-            tutorialPopup.SetActive(false);
+            StaticValues.shellNumber = shellNumber;
+            StaticValues.shellSpeed = shellSpeed;
+
+            settingWindow.gameObject.SetActive(false);
 
             AudioManager.Instance.PlaySFX(Sound.Key.Ready);
             prompter.Play(Prompter.Type.Ready);
@@ -84,7 +81,7 @@ public class Ctrl_Main : MonoBehaviour
             yield return new WaitForSeconds(1f);
 
             prompter.Play(Prompter.Type.None);
-            GameStart();
+            GameStart(shellNumber, shellSpeed);
         }
     }
     public void OnClickRetry()
@@ -100,8 +97,9 @@ public class Ctrl_Main : MonoBehaviour
 
         UnityEngine.SceneManagement.SceneManager.LoadScene(ConstantValues.SCENE_TITLE);
     }
-    private void GameStart()
+    private void GameStart(int shellCount, int shellSpeed)
     {
+        shellMixer.Init(count: shellCount, speed: shellSpeed);
         shellMixer.Preview();
         state = State.Play;
     }
@@ -270,7 +268,8 @@ public class Ctrl_Main : MonoBehaviour
 
         // Init UI
         prompter.Play(Prompter.Type.None);
-        tutorialPopup.SetActive(true);
+        settingWindow.Init(ctrl: this);
+
         finishPopup.SetActive(false);
         choiceTimerText.gameObject.SetActive(false);
 
@@ -282,9 +281,7 @@ public class Ctrl_Main : MonoBehaviour
         // Retry
         if (StaticValues.isRetry)
         {
-            OnClickStart();
-
-            StaticValues.isRetry = false;
+            PlayGame(StaticValues.shellNumber, StaticValues.shellSpeed);
         }
     }
 }
