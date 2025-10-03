@@ -17,11 +17,9 @@ public class Ctrl_Main : MonoBehaviour
     }
 
     [Header("UI")]
-    [SerializeField] private GameObject readyPopup;
-    [SerializeField] private GameObject goPopup;
-    [SerializeField] private GameObject nextPopup;
     [SerializeField] private GameObject tutorialPopup;
     [SerializeField] private GameObject finishPopup;
+    [SerializeField] private Prompter prompter;
 
     [SerializeField] private Image[] roundFeedbacks;
     [SerializeField] private TextMeshProUGUI choiceTimerText;
@@ -73,20 +71,19 @@ public class Ctrl_Main : MonoBehaviour
         IEnumerator Cor()
         {
             AudioManager.Instance.PlaySFX(Sound.Key.Click);
-
             tutorialPopup.SetActive(false);
-            readyPopup.SetActive(true);
+
             AudioManager.Instance.PlaySFX(Sound.Key.Ready);
+            prompter.Play(Prompter.Type.Ready);
 
             yield return new WaitForSeconds(1f);
 
-            readyPopup.SetActive(false);
-            goPopup.SetActive(true);
             AudioManager.Instance.PlaySFX(Sound.Key.Go);
+            prompter.Play(Prompter.Type.Go);
 
             yield return new WaitForSeconds(1f);
 
-            goPopup.SetActive(false);
+            prompter.Play(Prompter.Type.None);
             GameStart();
         }
     }
@@ -216,11 +213,11 @@ public class Ctrl_Main : MonoBehaviour
             roundCount++;
             state = State.Play;
 
-            nextPopup.SetActive(true);
+            prompter.Play(Prompter.Type.Next);
 
             yield return new WaitForSeconds(1.5f);
 
-            nextPopup.SetActive(false);
+            prompter.Play(Prompter.Type.None);
 
             shellMixer.Preview();
         }
@@ -272,9 +269,7 @@ public class Ctrl_Main : MonoBehaviour
         rightCount = 0;
 
         // Init UI
-        readyPopup.SetActive(false);
-        goPopup.SetActive(false);
-        nextPopup.SetActive(false);
+        prompter.Play(Prompter.Type.None);
         tutorialPopup.SetActive(true);
         finishPopup.SetActive(false);
         choiceTimerText.gameObject.SetActive(false);
