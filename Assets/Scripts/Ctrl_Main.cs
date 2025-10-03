@@ -16,6 +16,7 @@ public class Ctrl_Main : MonoBehaviour
         End
     }
 
+    [Header("UI")]
     [SerializeField] private GameObject readyPopup;
     [SerializeField] private GameObject goPopup;
     [SerializeField] private GameObject nextPopup;
@@ -26,8 +27,13 @@ public class Ctrl_Main : MonoBehaviour
     [SerializeField] private TextMeshProUGUI choiceTimerText;
     [SerializeField] private TextMeshProUGUI finishTimerText;
 
+    [Header("Component")]
     [SerializeField] private ShellMixer shellMixer;
+
+    [Header("Setting")]
     [SerializeField] private int roundMax;
+    [SerializeField] private int choiceTime;
+    [SerializeField] private int retryTime;
 
     private State state;
     private int roundCount = 1;
@@ -35,6 +41,16 @@ public class Ctrl_Main : MonoBehaviour
     private Coroutine coroutine = null;
     private void Start()
     {
+        if (!AudioManager.Instance.isLoadComplete)
+        {
+            AudioManager.Instance.Load(() =>
+            {
+                AudioManager.Instance.Init(volumeBGM: 1f, volumeSFX: .2f);
+                AudioManager.Instance.PlayBGM(Sound.Key.Bgm);
+                AudioManager.Instance.PlayBGM(Sound.Key.BgmSfx);
+            });
+        }
+
         Init();
     }
     private void Update()
@@ -46,6 +62,7 @@ public class Ctrl_Main : MonoBehaviour
 
         if (state == State.Checkpoint && Input.GetMouseButtonDown(0)) // 마우스 왼쪽 버튼
         {
+            AudioManager.Instance.PlaySFX(Sound.Key.Click);
             Choose();
         }
     }
@@ -55,13 +72,17 @@ public class Ctrl_Main : MonoBehaviour
 
         IEnumerator Cor()
         {
+            AudioManager.Instance.PlaySFX(Sound.Key.Click);
+
             tutorialPopup.SetActive(false);
             readyPopup.SetActive(true);
+            AudioManager.Instance.PlaySFX(Sound.Key.Ready);
 
             yield return new WaitForSeconds(1f);
 
             readyPopup.SetActive(false);
             goPopup.SetActive(true);
+            AudioManager.Instance.PlaySFX(Sound.Key.Go);
 
             yield return new WaitForSeconds(1f);
 
@@ -71,11 +92,15 @@ public class Ctrl_Main : MonoBehaviour
     }
     public void OnClickRetry()
     {
+        AudioManager.Instance.PlaySFX(Sound.Key.Click);
+
         StaticValues.isRetry = true;
         UnityEngine.SceneManagement.SceneManager.LoadScene(ConstantValues.SCENE_MAIN);
     }
     public void OnClickStop()
     {
+        AudioManager.Instance.PlaySFX(Sound.Key.Click);
+
         UnityEngine.SceneManagement.SceneManager.LoadScene(ConstantValues.SCENE_TITLE);
     }
     private void GameStart()
@@ -94,9 +119,15 @@ public class Ctrl_Main : MonoBehaviour
             // Start Timer
             choiceTimerText.gameObject.SetActive(true);
 
-            for (int i = 10; i > 0; i--)
+            for (int i = choiceTime; i > 0; i--)
             {
+                if (i <= 5)
+                {
+                    AudioManager.Instance.PlaySFX(Sound.Key.Timer);
+                }
+
                 choiceTimerText.text = i.ToString();
+
                 yield return new WaitForSeconds(1f);
             }
 
@@ -128,44 +159,51 @@ public class Ctrl_Main : MonoBehaviour
     {
         if (result)
         {
+            AudioManager.Instance.PlaySFX(Sound.Key.Correct);
+
             rightCount++;
             roundFeedbacks[roundCount - 1].color = Color.green;
 
-            GameCheck(false);
+            GameCheck(2f);
         }
         else
         {
+            AudioManager.Instance.PlaySFX(Sound.Key.Wrong);
+
             // Show Correct Shell
             foreach (Shell s in shellMixer.Shells)
             {
                 if (s.isRight)
                 {
-                    s.Show(GameCheck);
+                    s.Show(GameCheck, 1.5f);
                 }
             }
 
             roundFeedbacks[roundCount - 1].color = Color.red;
         }
     }
-    private void GameCheck(bool value)
+    private void GameCheck(float delay)
     {
-        int half = roundMax / 2 + 1;
-
-        if (roundMax - roundCount + rightCount >= half)
+        DG.Tweening.DOVirtual.DelayedCall(delay, () => 
         {
-            if (rightCount < half)
+            int half = roundMax / 2 + 1;
+
+            if (roundMax - roundCount + rightCount >= half)
             {
-                RoundNext();
+                if (rightCount < half)
+                {
+                    RoundNext();
+                }
+                else
+                {
+                    GameVictory();
+                }
             }
             else
             {
-                GameVictory();
+                GameDefeat();
             }
-        }
-        else
-        {
-            GameDefeat();
-        }
+        });
     }
     private void RoundNext()
     {
@@ -173,12 +211,14 @@ public class Ctrl_Main : MonoBehaviour
 
         IEnumerator Cor()
         {
+            AudioManager.Instance.PlaySFX(Sound.Key.Next);
+
             roundCount++;
             state = State.Play;
 
             nextPopup.SetActive(true);
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(1.5f);
 
             nextPopup.SetActive(false);
 
@@ -187,6 +227,8 @@ public class Ctrl_Main : MonoBehaviour
     }
     private void GameVictory()
     {
+        AudioManager.Instance.PlaySFX(Sound.Key.Victory);
+
         state = State.End;
         roundCount = 1;
         rightCount = 0;
@@ -199,14 +241,21 @@ public class Ctrl_Main : MonoBehaviour
 
         IEnumerator Cor()
         {
+            AudioManager.Instance.PlaySFX(Sound.Key.Defeat);
+
             state = State.End;
             roundCount = 1;
             rightCount = 0;
 
             finishPopup.SetActive(true);
 
-            for (int i = 10; i > 0; i--)
+            for (int i = retryTime; i > 0; i--)
             {
+                if (i <= 5)
+                {
+                    AudioManager.Instance.PlaySFX(Sound.Key.Timer);
+                }
+
                 finishTimerText.text = i.ToString();
                 yield return new WaitForSeconds(1f);
             }

@@ -433,6 +433,8 @@ MonoBehaviour:
   finishTimerText: {fileID: 879455199}
   shellMixer: {fileID: 244944149}
   roundMax: 3
+  volumeBGM: 1
+  volumeSFX: 0.2
 --- !u!4 &244944148
 Transform:
   m_ObjectHideFlags: 0

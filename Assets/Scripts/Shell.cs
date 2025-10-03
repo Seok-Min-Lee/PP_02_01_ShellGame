@@ -118,4 +118,18 @@ public class Shell : MonoBehaviour
 
         seq.AppendCallback(() => callback?.Invoke(isRight));
     }
+    public void Show(Action<float> callback = null, float callbackDelay = 0f)
+    {
+        Sequence seq = DOTween.Sequence();
+
+        seq.Append(shellTransform.DOLocalMoveY(1.7f, 1f / speed));
+        seq.Join(shellTransform.DOLocalMoveZ(1.7f, 1f / speed));
+        seq.Join(shellTransform.DOLocalRotate(new Vector3(225, 0, 0), 1f / speed));
+
+        seq.Append(shellTransform.DOLocalMoveY(0f, 1f / speed));
+        seq.Join(shellTransform.DOLocalMoveZ(0f, 1f / speed));
+        seq.Join(shellTransform.DOLocalRotate(new Vector3(180, 0, 0), 1f / speed));
+
+        seq.AppendCallback(() => callback?.Invoke(callbackDelay));
+    }
 }

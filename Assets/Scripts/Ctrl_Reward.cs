@@ -10,6 +10,18 @@ public class Ctrl_Reward : MonoBehaviour
 
 
     private float timer = 0f;
+    private void Start()
+    {
+        if (!AudioManager.Instance.isLoadComplete)
+        {
+            AudioManager.Instance.Load(() =>
+            {
+                AudioManager.Instance.Init(volumeBGM: 1f, volumeSFX: .2f);
+                AudioManager.Instance.PlayBGM(Sound.Key.Bgm);
+                AudioManager.Instance.PlayBGM(Sound.Key.BgmSfx);
+            });
+        }
+    }
 
     private void Update()
     {
@@ -30,6 +42,7 @@ public class Ctrl_Reward : MonoBehaviour
 
     public void OnClickHome()
     {
+        AudioManager.Instance.PlaySFX(Sound.Key.Click);
         UnityEngine.SceneManagement.SceneManager.LoadScene(ConstantValues.SCENE_TITLE);
     }
 }
