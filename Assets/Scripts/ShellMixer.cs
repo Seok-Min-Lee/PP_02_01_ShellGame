@@ -21,6 +21,8 @@ public class ShellMixer : MonoBehaviour
     {
         shellCount = count;
 
+        Vector3[] points = GetCirclePoints(count: count, radius: 3);
+
         pointDictionary = new Dictionary<int, Vector3>();
         int rightIndex = UnityEngine.Random.Range(0, count);
         for (int i = 0; i < shells.Length; i++)
@@ -31,6 +33,7 @@ public class ShellMixer : MonoBehaviour
                     id: i,
                     speed: speed,
                     isRight: i == rightIndex,
+                    position: points[i],
                     mixer: this
                 );
 
@@ -210,6 +213,23 @@ public class ShellMixer : MonoBehaviour
         List<Vector3> points = new List<Vector3>();
         points.Add(center + dir * dist);
         points.Add(center - dir * dist);
+
+        return points;
+    }
+    private Vector3[] GetCirclePoints(int count, int radius)
+    {
+        Vector3[] points = new Vector3[count];
+
+        Vector3 margin = new Vector3(0, 0, 1.5f);
+
+        for (int i = 0; i < count; i++)
+        {
+            // 각 점의 각도 (라디안 단위)
+            float angle = i * Mathf.PI * 2f / count;
+
+            // 원 위 좌표 계산
+            points[i] = new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle)) * radius - margin;
+        }
 
         return points;
     }

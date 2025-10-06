@@ -77,16 +77,17 @@ public class Shell : MonoBehaviour
             transform.position = Vector3.Lerp(a, b, timer);
         }
     }
-    public void Init(int id, int speed, bool isRight, ShellMixer mixer)
+    public void Init(int id, int speed, bool isRight, Vector3 position, ShellMixer mixer)
     {
         this.id = id;
         this.speed = speed;
         this.isRight = isRight;
+        transform.position = position;
         this.mixer = mixer;
 
         shellTransform.GetComponent<MeshRenderer>().material.color = colors[id];
         ball.SetActive(isRight);
-        transform.position = positions[id];
+        //transform.position = positions[id];
     }
     public void SettingLevel(int speed)
     {
