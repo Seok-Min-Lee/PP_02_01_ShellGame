@@ -1001,7 +1001,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uD074\uB9AC\uC5B4 \uBCF4\uC0C1 \uD488\uC808\uC785\uB2C8\uB2E4"
+  m_text: "YOU WIN!!\n\n\uD074\uB9AC\uC5B4 \uBCF4\uC0C1\uC740 \uC900\uBE44\uC911\uC785\uB2C8\uB2E4."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c0c6ec6521d17044392773e567bb49d7, type: 2}
   m_sharedMaterial: {fileID: -82527929076130859, guid: c0c6ec6521d17044392773e567bb49d7, type: 2}

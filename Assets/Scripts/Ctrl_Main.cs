@@ -39,6 +39,8 @@ public class Ctrl_Main : MonoBehaviour
     private Coroutine coroutine = null;
     private void Start()
     {
+        Debug.Log(TouchManager.Instance.Canvas != null);
+
         if (!AudioManager.Instance.isLoadComplete)
         {
             AudioManager.Instance.Load(() =>

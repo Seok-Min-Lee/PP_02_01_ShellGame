@@ -38,29 +38,33 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     public bool isLoadComplete { get; private set; }
 
-    // 불러온 오디오를 Sound 구조체로 변환하여 딕셔너리에 담는다.
-    // Key: Sound.key, Value: Sound
     public Dictionary<Sound.Key, Sound> soundDictionary = new Dictionary<Sound.Key, Sound>();
 
     public void Load(Action callback = null)
     {
-        // Resources 폴더를 사용하는 경우
-        Sound.Key[] keys = (Sound.Key[])Enum.GetValues(typeof(Sound.Key));
+        StartCoroutine(Cor());
 
-        foreach (var key in keys)
+        IEnumerator Cor()
         {
-            Sound sound = new Sound(
-                key: key,
+            // Resources 폴더를 사용하는 경우
+            Sound.Key[] keys = (Sound.Key[])Enum.GetValues(typeof(Sound.Key));
 
-                audioClip: Resources.Load<AudioClip>($"Audio/{key}")
-            );
+            foreach (var key in keys)
+            {
+                Sound sound = new Sound(
+                    key: key,
+                    audioClip: Resources.Load<AudioClip>($"Audio/{key}")
+                );
 
-            soundDictionary.Add(key, sound);
+                soundDictionary.Add(key, sound);
+
+                yield return sound;
+            }
+
+            isLoadComplete = true;
+
+            callback?.Invoke();
         }
-
-        isLoadComplete = true;
-
-        callback?.Invoke();
     }
     public void Init(float volumeBGM, float volumeSFX)
     {
