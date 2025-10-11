@@ -17,17 +17,18 @@ public class ShellMixer : MonoBehaviour
     private Dictionary<(int, int), List<PathPointToPoint>> pathDictionary = new Dictionary<(int, int), List<PathPointToPoint>>();
 
     private int shellCount;
-    public void Init(int count, int speed)
+    public void Init(int shellCount, int speed, int shuffleCount)
     {
-        shellCount = count;
+        this.shellCount = shellCount;
+        this.shuffleCount = shuffleCount;
 
-        Vector3[] points = GetCirclePoints(count: count, radius: 3);
+        Vector3[] points = GetCirclePoints(count: shellCount, radius: 3);
 
         pointDictionary = new Dictionary<int, Vector3>();
-        int rightIndex = UnityEngine.Random.Range(0, count);
+        int rightIndex = UnityEngine.Random.Range(0, shellCount);
         for (int i = 0; i < shells.Length; i++)
         {
-            if (i < count)
+            if (i < shellCount)
             {
                 shells[i].Init(
                     id: i,

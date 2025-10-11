@@ -61,7 +61,7 @@ public class Ctrl_Main : MonoBehaviour
             Choose();
         }
     }
-    public void PlayGame(int shellNumber, int shellSpeed)
+    public void PlayGame(int shellNumber, int shellSpeed, int shuffleCount)
     {
         coroutine = StartCoroutine(Cor());
 
@@ -69,6 +69,7 @@ public class Ctrl_Main : MonoBehaviour
         {
             StaticValues.shellNumber = shellNumber;
             StaticValues.shellSpeed = shellSpeed;
+            StaticValues.shuffleCount = shuffleCount;
 
             settingWindow.gameObject.SetActive(false);
 
@@ -83,7 +84,7 @@ public class Ctrl_Main : MonoBehaviour
             yield return new WaitForSeconds(1f);
 
             prompter.Play(Prompter.Type.None);
-            GameStart(shellNumber, shellSpeed);
+            GameStart(shellNumber, shellSpeed, shuffleCount);
         }
     }
     public void OnClickRetry()
@@ -99,9 +100,9 @@ public class Ctrl_Main : MonoBehaviour
 
         UnityEngine.SceneManagement.SceneManager.LoadScene(ConstantValues.SCENE_TITLE);
     }
-    private void GameStart(int shellCount, int shellSpeed)
+    private void GameStart(int shellCount, int shellSpeed, int shuffleCount)
     {
-        shellMixer.Init(count: shellCount, speed: shellSpeed);
+        shellMixer.Init(shellCount: shellCount, speed: shellSpeed, shuffleCount: shuffleCount);
         shellMixer.Preview();
         state = State.Play;
     }
@@ -283,7 +284,7 @@ public class Ctrl_Main : MonoBehaviour
         // Retry
         if (StaticValues.isRetry)
         {
-            PlayGame(StaticValues.shellNumber, StaticValues.shellSpeed);
+            PlayGame(StaticValues.shellNumber, StaticValues.shellSpeed, StaticValues.shuffleCount);
         }
     }
 }
